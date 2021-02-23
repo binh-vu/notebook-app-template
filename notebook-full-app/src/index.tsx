@@ -15,7 +15,8 @@ import { AppStore } from "./models";
 (window as any).renderApp = (
   containerId: string,
   tunnel: Tunnel,
-  defaultProps?: { [prop: string]: any }
+  defaultProps?: { [prop: string]: any },
+  shadowDOM?: boolean
 ) => {
   if (defaultProps === undefined) {
     defaultProps = {};
@@ -28,7 +29,7 @@ import { AppStore } from "./models";
   }
 
   let enableLogging = true;
-  let shadow = container.attachShadow({ mode: "open" });
+  let shadow = shadowDOM === false ? container : container.attachShadow({ mode: "open" });
   let socket = new Socket(tunnel, 60000, enableLogging);
   let store = new AppStore(socket, defaultProps as any);
 
@@ -45,12 +46,13 @@ import { AppStore } from "./models";
 (window as any).renderDevApp = (
   containerId: string,
   tunnel: Tunnel,
-  defaultProps?: { [prop: string]: any }
+  defaultProps?: { [prop: string]: any },
+  shadowDOM?: boolean
 ) => {
   let recordTunnel = new RecordTunnel(tunnel);
   (window as any).recordTunnel = recordTunnel;
   console.log("renderDev");
-  (window as any).renderApp(containerId, recordTunnel, defaultProps);
+  (window as any).renderApp(containerId, recordTunnel, defaultProps, shadowDOM);
 };
 
 // render the app when debugging

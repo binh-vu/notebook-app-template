@@ -12,6 +12,7 @@ import {
 (window as any).renderApp = (
   containerId: string,
   tunnel: Tunnel,
+  shadowDOM?: boolean
 ) => {
   let container = document.getElementById(containerId);
   if (container === null) {
@@ -20,7 +21,7 @@ import {
   }
 
   let enableLogging = true;
-  let shadow = container.attachShadow({ mode: "open" });
+  let shadow = shadowDOM === false ? container : container.attachShadow({ mode: "open" });
   let socket = new Socket(tunnel, 60000, enableLogging);
 
   ReactDOM.render(
@@ -32,11 +33,12 @@ import {
 (window as any).renderDevApp = (
   containerId: string,
   tunnel: Tunnel,
+  shadowDOM?: boolean
 ) => {
   // turn the tunnel to a recorded one and expose it for debugging
   let recordTunnel = new RecordTunnel(tunnel);
   (window as any).recordTunnel = recordTunnel;
-  (window as any).renderApp(containerId, recordTunnel);
+  (window as any).renderApp(containerId, recordTunnel, shadowDOM);
 };
 
 // render the app when debugging
